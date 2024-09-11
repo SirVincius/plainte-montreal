@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  {% include 'header.html'%}
+  <body>
+    {% include 'navbar.html' %}
+    <div class="container">
+      <h4>Déposer une plainte</h4>
+      <form>
+        <label class="margin-top-25" for="prenom">Prénom</label>
+        <input
+          class="form-control"
+          type="text"
+          name="prenom"
+          id="prenom"
+          required
+        />
+        <label class="margin-top-25" for="nom">Nom</label>
+        <input class="form-control" type="text" name="nom" id="nom" required />
+        <label class="margin-top-25" for="etablissement"
+          >Établissement visité</label
+        >
+        <input
+          class="form-control"
+          type="text"
+          name="etablissement"
+          id="etablissement"
+          required
+        />
+        <label class="margin-top-25" for="adresse"
+          >Adresse de l'établissement</label
+        >
+        <input
+          class="form-control"
+          type="text"
+          name="adresse"
+          id="adresse"
+          required
+        />
+        <label class="margin-top-25" for="ville"
+          >Ville de l'établissement</label
+        >
+        <input
+          class="form-control"
+          type="text"
+          name="ville"
+          id="ville"
+          required
+        />
+        <label class="margin-top-25" for="date_visite"
+          >Date de visite de l'établissement</label
+        >
+        <input
+          class="form-control"
+          type="date"
+          name="date_visite"
+          id="date_visite"
+          required
+        />
+        <label class="margin-top-25" for="description">Description</label>
+        <input
+          class="form-control"
+          type="text"
+          name="description"
+          id="description"
+          required
+        />
+        <button
+          class="btn btn-primary margin-top-25"
+          type="button"
+          onclick="deposer_plainte()"
+        >
+          Déposer la plainte
+        </button>
+      </form>
+    </div>
+    <br />
+    <script>
+      function deposer_plainte() {
+        var prenom = document.getElementById("prenom").value;
+        var nom = document.getElementById("nom").value;
+        var etablissement = document.getElementById("etablissement").value;
+        var adresse = document.getElementById("adresse").value;
+        var ville = document.getElementById("ville").value;
+        var date_visite = document.getElementById("date_visite").value;
+        var description = document.getElementById("description").value;
+        if (
+          prenom == "" ||
+          nom == "" ||
+          etablissement == "" ||
+          adresse == "" ||
+          ville == "" ||
+          date_visite == "" ||
+          description == ""
+        ) {
+          alert("Veuillez remplir tous les champs.");
+          return;
+        }
+        const data = {
+          prenom: prenom,
+          nom: nom,
+          etablissement: etablissement,
+          adresse: adresse,
+          ville: ville,
+          date_visite: date_visite,
+          description: description,
+        };
+        const jsonData = JSON.stringify(data);
+        fetch("http://localhost:5000/api/deposer_plainte", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: jsonData,
+        })
+          .then((response) => {
+            if (response.ok) {
+              window.location.href = "/confirmation_plainte";
+            } else {
+              alert("Échec du dépôt de la plainte.");
+            }
+          })
+          .catch((error) => {
+            alert("Error:", error);
+          });
+      }
+    </script>
+    {% include 'footer.html'%}
+  </body>
+</html>

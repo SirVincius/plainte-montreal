@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  {% include 'header.html'%}
+  <body>
+    {% include 'navbar.html' %}
+    <div class="container fluid">
+      <div class="container">
+        <h1>Résultats de la recherche</h1>
+        {% for infraction in resultats %}
+        <ul class="list-group">
+          <li class="list-group-item">
+            Numéro de poursuite : {{infraction[0]}}
+          </li>
+          <li class="list-group-item">
+            Numéro d'entreprise : {{infraction[1]}}
+          </li>
+          <li class="list-group-item">Date d'infraction : {{infraction[2]}}</li>
+          <li class="list-group-item">
+            Description de l'infraction : {{infraction[3]}}
+          </li>
+          <li class="list-group-item">
+            Adresse : {{infraction[4]}} {{infraction[5]}} {{infraction[6]}}
+            {{infraction[7]}}
+          </li>
+          <li class="list-group-item">Date de jugement : {{infraction[8]}}</li>
+          <li class="list-group-item">Établissement : {{infraction[9]}}</li>
+          <li class="list-group-item">Montant : {{infraction[10]}}</li>
+          <li class="list-group-item">Propriétaire : {{infraction[11]}}</li>
+          <li class="list-group-item">Statut : {{infraction[12]}}</li>
+          <li class="list-group-item">Date de statut : {{infraction[13]}}</li>
+          <li class="list-group-item">Catégorie : {{infraction[14]}}</li>
+        </ul>
+        <br />
+        {% endfor %}
+      </div>
+    </div>
+    {% include 'footer.html'%}
+  </body>
+</html>

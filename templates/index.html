@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+  {% include 'header.html'%}
+  <body onload="chargerRestaurants()">
+    {% include 'navbar.html' %}
+
+    <div class="container-fluid">
+      <div class="container">
+        <h4>Trouvez des contraventions par mots-clé</h4>
+        <form action="/recherche_par_critere" method="post">
+          <label class="margin-top-25" for="mot-cle">Mot-clé</label>
+          <input
+            class="form-control"
+            type="search"
+            name="mot-cle"
+            id="mot-cle"
+            placeholder="Rechercher une contravention"
+          />
+          <label class="margin-top-25" for="critere">Critère de recherche</label>
+          <select
+            class="form-control form-select"
+            name="critere"
+            id="critere"
+          >
+            <option value="etablissement">Nom d'établissement</option>
+            <option value="proprietaire">Propriétaire</option>
+            <option value="rue">Rue</option>
+          </select>
+          <button class="btn btn-primary margin-top-25 btn-recherche" type="submit">
+            Rechercher par mot-clé
+          </button>
+        </form>
+      </div>
+      <br />
+      <div class="container">
+        <h4>Trouvez des contraventions par intervalle de dates</h4>
+        <form>
+          <label class="margin-top-25" for="du">Date minimum</label>
+          <input class="form-control" type="date" name="du" id="du" value="2000-01-01" required/>
+          <label class="margin-top-25" for="au">Date maximum</label>
+          <input class="form-control" type="date" name="au" id="au" value="2024-01-01" required/>
+          <button
+            class="btn btn-primary margin-top-25 btn-recherche"
+            type="button"
+            onclick="obtenir_contraventions()"
+          >
+            Rechercher par dates
+          </button>
+        </form>
+      </div>
+      <br>
+        <div class="container">
+          <h4>Trouvez des contraventions par nom de restaurants</h4>
+          <form>
+            <label class="margin-top-25" for="restaurants">Trouvez un restaurant</label>
+            <select class="form-control" name="restaurants" id="restaurants">Sélectionner un restaurant</select>
+            <button
+            class="btn btn-primary margin-top-25 btn-recherche"
+            type="button"
+            onclick="obtenir_informations()"
+          >
+            Rechercher par restaurant
+          </button>
+          </form>
+          <br>
+          <div id="resultats"></div>
+
+
+          <div class="container">
+            <h4>Test* Ajouter un nouvel utilisateur</h4>
+            <form>
+              <label class="margin-top-25" for="prenom_utilisateur">Prenom de l'utilisateur</label>
+              <input class="form-control" type="text" name="prenom_utilisateur" id="prenom_utilisateur" required/>
+              <label class="margin-top-25" for="nom_utilisateur">Nom de l'utilisateur</label>
+              <input class="form-control" type="text" name="nom_utilisateur" id="nom_utilisateur" required/>
+              <label class="margin-top-25" for="adresse_courriel_utilisateur">Adresse courriel de l'utilisateur</label>
+              <input class="form-control" type="text" name="adresse_courriel_utilisateur" id="adresse_courriel_utilisateur" required/>
+              <label class="margin-top-25" for="liste_etablissements">Liste d'établissements</label>
+              <input class="form-control" type="text" name="liste_etablissements" id="liste_etablissements" required/>
+              <label class="margin-top-25" for="mot_de_passe_utilisateur">Mot de passe</label>
+              <input class="form-control" type="text" name="mot_de_passe_utilisateur" id="mot_de_passe_utilisateur" required/>
+              <button
+                class="btn btn-primary margin-top-25 btn-recherche"
+                type="button"
+                onclick="ajouter_utilisateur()"
+              >
+                Ajouter le nouvel utilisateur
+              </button>
+            </form>
+          </div>
+          <br>
+
+
+    <script>
+      function obtenir_contraventions() {
+        var du = document.getElementById("du").value;
+        var au = document.getElementById("au").value;
+        var xhr = new XMLHttpRequest();
+        var query =
+          "?du=" + encodeURIComponent(du) + "&au=" + encodeURIComponent(au);
+        var url = "http://localhost:5000/api/contrevenants" + query;
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", url);
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+              var data = JSON.parse(xhr.responseText);
+              update_resultats(data);
+            } else {
+              alert("Request failed with status:", xhr.status);
+            }
+          }
+        };
+        xhr.send();
+      }
+      function update_resultats(data) {
+        // On construit un map avec les contrevenants et le nombre de contraventions
+        var contrevenants = [];
+        var infractions = [];
+        var contenu =
+          '<table class="table"><thead><tr><th scope="col">Établissement</th>' +
+          '<th scope="col">Nombre d\'infractions</th></tr></thead><tbody>';
+
+        for (var i = 0; i < data.length; i++) {
+          var contrevenant = data[i];
+          var nom = contrevenant.etablissement;
+
+          if (contrevenants.includes(nom))
+            infractions[contrevenants.indexOf(nom)]++;
+          else {
+            contrevenants.push(nom);
+            infractions.push(1);
+          }
+        }
+
+        for (var i = 0; i < contrevenants.length; i++) {
+          contenu +=
+            "<tr></th><td>" +
+            contrevenants[i] +
+            "</td><td>" +
+            infractions[i] +
+            "</td></tr>";
+        }
+
+        contenu += "</tbody></table>";
+        document.getElementById("resultats").innerHTML = contenu;
+      }
+      // Fonctions de chargement
+      function chargerRestaurants() {
+        var url = "http://localhost:5000/api/etablissements";
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", url);
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+              var data = JSON.parse(xhr.responseText);
+              generateListeRestaurants(data);
+            } else {
+              alert("Request failed with status:", xhr.status);
+            }
+          }
+        }
+        xhr.send();
+      }
+      function generateListeRestaurants(data) {
+        var options = document.getElementById("restaurants");
+              contenu = ""
+        for(var i = 0; i < data.length; i++) 
+          contenu = contenu + '<option value="' + data[i].etablissement + '">' + data[i].etablissement + '</option>';
+        document.getElementById("restaurants").innerHTML = contenu;
+      }
+
+      function obtenir_informations() {
+        var xhr = new XMLHttpRequest();
+        var restaurant = document.getElementById("restaurants").value;
+        var url = "http://localhost:5000/api/restaurant/" + restaurant;
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", url);
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+              var data = JSON.parse(xhr.responseText);
+              update_informations(data);
+            } else {
+              alert("Request failed with status:", xhr.status);
+            }
+          }
+        };
+        xhr.send();
+      }
+      function update_informations(data) {
+        // On construit un map avec les contrevenants et le nombre de contraventions
+        var contenu =
+          '<table class="table"><thead><tr><th scope="col">Établissement</th><th scope="col">Infraction</th>' +
+          '<th scope="col">Date d\'infraction</th><th scope="col">Montant</th></tr></thead><tbody>';
+
+        for (var i = 0; i < data.length; i++) {
+          contenu +=
+            '<tr><th scope="row">' +
+            data[i].etablissement +
+            "</th><td>" +
+            data[i].description +
+            "</td><td>" +
+            data[i].date_infraction +
+            "</td><td>" +
+            data[i].montant +
+            "$</td></tr>";
+        }
+
+        contenu += "</tbody></table>";
+        document.getElementById("resultats").innerHTML = contenu;
+      }
+      function ajouter_utilisateur() {
+        var prenom = document.getElementById('prenom_utilisateur').value;
+        var nom = document.getElementById('nom_utilisateur').value;
+        var adresse_courriel = document.getElementById('adresse_courriel_utilisateur').value;
+        var liste_etablissements = document.getElementById('liste_etablissements').value;
+        var mot_de_passe = document.getElementById('mot_de_passe_utilisateur').value;
+        const data = {
+          prenom: prenom,
+          nom: nom,
+          adresse_courriel: adresse_courriel,
+          liste_etablissements: liste_etablissements,
+          mot_de_passe: mot_de_passe
+        };
+        const jsonData = JSON.stringify(data);
+        fetch('http://localhost:5000/api/nouvel_utilisateur', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body:jsonData
+        })
+        .then(response => {
+          if (response.ok) {
+              window.location.href = "/confirmation_utilisateur";
+            } else {
+              alert("Échec de l'ajout de l'utilisateur.");
+            }
+        })
+        .catch(error => {
+          alert("Error:", error);
+        });
+      }
+    </script>
+    {% include 'footer.html'%}
+  </body>
+</html>

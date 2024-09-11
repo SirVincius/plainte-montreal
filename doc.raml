@@ -1,0 +1,186 @@
+#%RAML 1.0
+
+title: Services de contraventions
+baseUrl: http://localhost:5000
+version: 1.0
+
+/api/contrevenants:
+    get:
+        description: Obtenir la liste des contraventions émises entre deux dates
+        body:
+            application/json:
+                example: |
+        queryParameters: 
+            dateMin: La date minimum
+            dateMax: La date maximum
+    response:
+        200:
+            body:
+                application/json:
+                    example: |
+                    [
+                        {
+                            'id_poursuite': 2873,
+                            'id_businnes': 103175,
+                            'date_infraction': '2015-07-16',
+                            'description': "Est prohibée toute tromperie",
+                            'numero_civique': '1805', 'rue': 'Rue Sainte-Catherine Ouest',
+                            'ville': 'Montréal',
+                            'province': 'Québec',
+                            'date_jugement': '2016-10-26',
+                            'etablissement': 'ZUSHI',
+                            'montant': 500,
+                            'proprietaire': 7993714 CANADA INC.',
+                            'statut': 'Fermé',
+                            'date_statut': '2019-06-12',
+                            'categorie': 'Restaurant'
+                        },
+                        {
+                            'id_poursuite': 7449,
+                            'id_businnes': 117877,
+                            'date_infraction': '2020-01-30',
+                            'description': "Le produit périssable vendu...",
+                            'numero_civique': '1905',
+                            'rue': 'Rue Sainte-Catherine Ouest',
+                            'ville': 'Montréal',
+                            'province': 'Québec',
+                            'date_jugement': '2021-05-17',
+                            'etablissement': 'ÉPICERIE DU BAZAAR',
+                            'montant': 250,
+                            'proprietaire': 'EPICERIE DU BAZAAR INC.',
+                            'statut': 'Ouvert',
+                            'date_statut': '2018-07-23',
+                            'categorie': 'Boucherie-épicerie'
+                        }
+                    ]
+                        
+/api/restaurant/<restaurant>:
+    get:
+        description: Obtenir la liste des infractions émises pour un restaurant
+        body:
+            application/json:
+                example: |
+        queryParameters: 
+            restaurant: le nom du restaurant
+        response:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            [
+                                {
+                                    'etablissement': '110 MIRACLES INC.',
+                                    'description': "Le produit altérable à la chaleur...",
+                                    'date_infraction': '2018-09-24', 'montant': 250
+                                }
+                            ]
+
+/api/etablissements:
+/api/count_infractions_restaurants/json:
+    get:
+        description: Obtenir la liste des établissements ainsi que le nombre de contraventions
+        response:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            [
+                                {
+                                    "etablissement":"RESTAURANT BASHA",
+                                    "nombre_d'infractions":36
+                                    },
+                                    {
+                                    "etablissement":"DOUBLE PIZZA",
+                                    "nombre_d'infractions":32
+                                    },
+                                    {
+                                    "etablissement":"BUFFALO BILL WINGS",
+                                    "nombre_d'infractions":29
+                                }
+                            ]
+
+/api/count_infractions_restaurants/xml:
+    get:
+        description: Obtenir la liste des établissements ainsi que le nombre de contraventions
+        response:
+            200:
+                body:
+                    application/xml:
+                        example: |
+                        <infractions>
+                            <etablissement>
+                                <nom_etablissement>RESTAURANT BASHA</nom_etablissement>
+                                <nombre_infractions>36</nombre_infractions>
+                            </etablissement>
+                            <etablissement>
+                                <nom_etablissement>DOUBLE PIZZA</nom_etablissement>
+                                <nombre_infractions>32</nombre_infractions>
+                            </etablissement>
+                            <etablissement>
+                                <nom_etablissement>BILL WINGS</nom_etablissement>
+                                <nombre_infractions>29</nombre_infractions>
+                            </etablissement>
+                        </infractions>
+
+/api/count_infractions_restaurants/csv:
+    get:
+        description: Obtenir la liste des établissements ainsi que le nombre de contraventions
+        response:
+            200:
+                body:
+                    application/csv:
+                        example: |
+                        nom_etablissement,nombre_infractions
+                        RESTAURANT BASHA,36
+                        DOUBLE PIZZA,32
+                        BUFFALO BILL WINGS,29
+
+/api/nouvel_utilisateur:
+    post:
+    description: Deposer une nouvelle plainte
+        body:
+            application/json:
+                type: Plainte
+                example: |
+                    {
+                        "prenom": "Jean",
+                        "nom": "Turgeon",
+                        "etablissement": "Boulangerie ABC",
+                        "adresse": "1234 Saint-Laurent",
+                        "ville": "Montréal",
+                        "date_visite": "2024-01-01",
+                        "description": "L'encroit est insalubre"
+                    }
+        responses:
+            200:
+                body:
+                application/json:
+                    example: |
+                    {
+                        "message": "Plainte de 'Jean Turgeon' ajoutée avec succès!"
+                    }
+              
+/api/deposer_plainte:
+    post:
+        description: Deposer une nouvelle plainte
+        body:
+        application/json:
+            type: Plainte
+            example: |
+            {
+                "prenom": "Jean",
+                "nom": "Turgeon",
+                "etablissement": "Boulangerie ABC",
+                "adresse": "1234 Saint-Laurent",
+                "ville": "Montréal",
+                "date_visite": "2024-01-01",
+                "description": "L'encroit est insalubre"
+            }
+        responses:
+        200:
+            body:
+            application/json:
+                example: |
+                {
+                    "message": "Plainte de 'Jean Turgeon' ajoutée avec succès!"
+                }

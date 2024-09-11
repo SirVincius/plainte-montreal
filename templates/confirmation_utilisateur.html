@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+  {% include 'header.html'%}
+  <body>
+    {% include 'navbar.html' %}
+    <div class="container-fluid">
+      <div class="container">
+        <h1>L'utilisateur a été ajouté avec succès!</h1>
+        <a class="btn btn-primary margin-top-25" href="{{ url_for('index') }}"
+          >Retour à la page principale</a
+        >
+      </div>
+    </div>
+    {% include 'footer.html'%}
+  </body>
+</html>
